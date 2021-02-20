@@ -1,0 +1,98 @@
+---
+title: "Lab 2"
+author: "Ryan Pate"
+date: "2/19/2021"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+**We will be exploring what aspects of the chocolates may affect taste. Before setting off to the exploration, answer the following questions.**
+
+1. How are the ratings distributed? Create both a histogram and a boxplot and describe them. Don’t forget to mention outliers, if there are any.
+
+    ```{r, echo=FALSE}
+    choco <- read.csv("https://raw.githubusercontent.com/xdaiISU/ds202materials/master/hwlabs/data/choco.csv") 
+    hist(choco$Rating, main= "Histogram Distribution of Chocolate Ratings", ylab= "Frequency", xlab= "Rating", breaks= 12)
+    ```
+    ```{r, echo=FALSE}
+    boxplot(choco$Rating, main= "Boxplot Distribution of Chocolate Rating")
+    ```
+               
+2. How does the number of ratings depend on the location of the company? Draw a bar chart of the number of reports.
+
+    As you can see, I tried a couple of different ways to create a bar chart. Since there are so many locations I don't feel that a bar chart is a good way of representing this data. I'm confused as to why the graph is showing a height from 0 to 3000 when it's supposed to be displaying data on a rating scale from 0-4.
+
+    ```{r, echo= FALSE}
+    counts <- table(choco$Rating, choco$Location)
+    barplot(counts)
+    library(ggplot2)
+    ggplot(choco, aes(x=Location, y=Rating)) + 
+  geom_bar(stat = "identity")
+    ```
+
+3. Do ratings depend on the cacao percentage of a chocolate bar? Create both numerical and graphical summaries, and explain. [Hint: Think about why the scatterplot is not a very good choice for visualization here.]
+
+    The cacao percentages in this dataset range from 42% to 100%. The mean cacao percentage of the chocolates with a rating of 4 is 70.8. The mean cacao percentage of chocolates with ratings 3, 2, and 1, are 71.7, 76.6, and 71.7, respectively. Going off of these averages, there does not appear to be a strong correlation of rating level with cacao percentage. 
+    ```{r, include= FALSE}
+    dark <- subset(choco, Rating== 4)
+    dark
+    mean(dark$Cocoa_Percent)
+    three <- subset(choco, Rating== 3)
+    mean(three$Cocoa_Percent)
+    two <- subset(choco, Rating== 2)
+    mean(two$Cocoa_Percent)
+    one <- subset(choco, Rating== 1)
+    mean(one$Cocoa_Percent)
+    ```
+    ```{r, echo= FALSE}
+    boxplot(dark$Cocoa_Percent, main= "Cocao Percentages of Chocolates Rated 4")
+    boxplot(three$Cocoa_Percent, main= "Cocao Percentages of Chocolates Rated 3")
+    boxplot(two$Cocoa_Percent, main= "Cocao Percentages of Chocolates Rated 2")
+    boxplot(one$Cocoa_Percent, main= "Cocao Percentages of Chocolates Rated 1")
+    ```
+    
+
+**Now, we are ready to explore.**
+
+4. How do different bean origins compare in terms of the flavor of chocolates? Are beans from some places better than the other? Create both numerical and graphical summaries, and explain.
+
+    I randomly chose five different countries to sample. The mean rating of chocolates from Sweden is 3. The mean rating of chocolates from France is 3.25. The mean rating of chocolates from Honduras is 3.21. The mean rating of Nicaraguan chocolates is 3.1. The mean rating of New Zealand chocolates is 3.21. It seems that there is a slight correlation between warmer locations and higher ratings, but this is too small a sample size to say definitively. 
+    ```{r, include=FALSE}
+    sweden <- subset(choco, Location== "Sweden")
+    mean(sweden$Rating)
+    france <- subset(choco, Location== "France")
+    mean(france$Rating)
+    honduras <- subset(choco, Location== "Honduras")
+    mean(honduras$Rating)
+    nic <- subset(choco, Location== "Nicaragua")
+    mean(nic$Rating)
+    nz <- subset(choco, Location== "New Zealand")
+    mean(nz$Rating)
+    ```
+
+5. Brainstorm two analyses you would like to perform (with your teammates). Describe in plain language what comparisons are you making. Create suitable numerical and graphical summaries for your analyses. Describe the results.
+
+    - First analysis: Date vs Rating
+    
+    The average year for a chocolate rated either 3 or 4 is 2013. The average year for a chocolate rated 2 is 2009. The average year for a chocolate rated 1 is 2007. There is definitely some correlation between how recently the chocolate was made and how high it is rated.
+    
+    ```{r, include= FALSE}
+    mean(dark$Date)
+    mean(three$Date)
+    mean(two$Date)
+    mean(one$Date)
+    ```
+    
+    - Second analysis: Origin of Chocolates Rated 4
+    
+    Still unsure why the rating range is so high on outputs, but this graph shows that the USA has the most chocolates ranked as a 4.
+    
+    ```{r, echo= FALSE}
+    library(ggplot2)
+    ggplot(dark, aes(x=Location, y=Rating)) + 
+  geom_bar(stat = "identity")
+    ```
+
